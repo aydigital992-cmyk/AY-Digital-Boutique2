@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070B14">
+<title>AY Digital Boutique — Admin v9 test</title>
+<style>
+:root{--bg:#070B14;--card:#0E1626;--line:#1C2A44;--blue:#1E6BFF;--blue2:#4DA3FF;--txt:#fff;--mut:#9DACC6;--wa:#25D366}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(1200px 500px at 50% -200px,#14306e66,transparent),var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",Tahoma,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:0;z-index:9;background:rgba(7,11,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:18px;background:linear-gradient(90deg,var(--blue2),#fff);-webkit-background-clip:text;background-clip:text;color:transparent;margin-inline-end:auto}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav a{font-size:13px;padding:6px 10px;border-radius:99px;color:var(--mut);border:1px solid transparent}
+nav a.on,nav a:hover{color:#fff;border-color:var(--blue);background:#1E6BFF22}
+.lang{background:none;border:1px solid var(--blue);color:#fff;border-radius:8px;padding:5px 10px;font-weight:700;cursor:pointer}
+main{max-width:1100px;margin:auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:8px 0}h2{font-size:20px;margin:18px 0 10px}
+.hero{padding:34px 18px;border-radius:20px;background:linear-gradient(135deg,#1E6BFF,#0A2A6B);box-shadow:0 20px 60px #1E6BFF33}
+.hero p{color:#E6EEFF;margin:6px 0 16px}
+.btn{display:inline-block;background:#fff;color:#0A2A6B;font-weight:700;border:0;padding:12px 18px;border-radius:12px;cursor:pointer;font-size:15px;text-align:center}
+.btn.b{background:var(--blue);color:#fff}
+.btn.wa{background:var(--wa);color:#04210f}
+.btn.g{background:none;border:1px solid var(--line);color:var(--txt)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(4,1fr)}}
+.pl{grid-template-columns:1fr}
+@media(min-width:760px){.pl{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:block;transition:.2s}
+.card:hover{border-color:var(--blue)}
+.img{aspect-ratio:1;background:linear-gradient(145deg,#15306b,#070B14);display:flex;align-items:center;justify-content:center;font-size:44px}
+.img img{width:100%;height:100%;object-fit:cover}
+.bd{padding:10px 12px}
+.pr{color:var(--blue2);font-weight:800;margin:4px 0}
+small,.mut{color:var(--mut);font-size:13px}
+.cat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:22px 10px;text-align:center;font-weight:700}
+.cat span{font-size:34px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px}
+.pdet{display:grid;gap:18px}
+@media(min-width:760px){.pdet{grid-template-columns:1fr 1fr}}
+.pdet .img{border-radius:16px}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;background:#0A1221;color:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:15px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.qty-control{display:flex;align-items:center;gap:10px;max-width:260px;margin-top:6px}
+.qty-control input{width:100px;text-align:center;font-weight:800;font-size:18px;padding:10px}
+.qty-btn{width:44px;height:44px;flex:0 0 44px;border:1px solid var(--blue);border-radius:12px;background:#1E6BFF22;color:#fff;font-size:25px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.qty-btn:active{background:var(--blue)}
+.plan{text-align:center}.plan .p{font-size:36px;font-weight:900;color:var(--blue2)}
+.del{background:none;border:1px solid #ff4d6d;color:#ff4d6d;border-radius:8px;padding:5px 9px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:8px 4px;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AY Digital Boutique</div>
+  <nav id="nav"></nav>
+  <button class="lang" id="lg" onclick="setLang(L==='fr'?'ar':'fr')">عربي</button>
+</header>
+<main id="app"></main>
+<script>
+const WA="212715749574";
+// Collez ici votre clé Publishable Supabase (jamais une clé secret/service_role).
+const SUPABASE_URL="https://xngdesljrwquncqirwoa.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_qwSy_TcTcz3229m6kCqPEQ_mm7ocNhF";
+const KEY="ayd_boutique_v1";
+const DEF={
+cats:[
+{id:"vet",fr:"Vêtements",ar:"ملابس",ic:"👕"},
+{id:"acc",fr:"Accessoires",ar:"إكسسوارات",ic:"👜"},
+{id:"men",fr:"Produits ménagers",ar:"منتجات منزلية",ic:"🧹"},
+{id:"elec",fr:"Électronique",ar:"إلكترونيات",ic:"📱"},
+{id:"ali",fr:"Alimentation",ar:"مواد غذائية",ic:"🫒"},
+{id:"aut",fr:"Autres",ar:"أخرى",ic:"📦"}],
+shops:[
+{id:"s1",n:"Boutique Démo Atlas",city:"Casablanca",phone:"212600000001",d:"Boutique de démonstration."},
+{id:"s2",n:"Maison Démo Rif",city:"Tanger",phone:"212600000002",d:"Boutique de démonstration."}],
+products:[
+{id:"p1",n:"T-shirt coton",na:"تيشرت قطن",p:99,c:"vet",s:"s1",d:"T-shirt en coton, coupe confortable (exemple).",ic:"👕"},
+{id:"p2",n:"Sac en cuir",na:"حقيبة جلد",p:249,c:"acc",s:"s1",d:"Sac à main élégant (exemple).",ic:"👜"},
+{id:"p3",n:"Lot de détergent",na:"منظف",p:45,c:"men",s:"s2",d:"Lot de produits ménagers (exemple).",ic:"🧴"},
+{id:"p4",n:"Écouteurs Bluetooth",na:"سماعات بلوتوث",p:179,c:"elec",s:"s2",d:"Écouteurs sans fil (exemple).",ic:"🎧"},
+{id:"p5",n:"Huile d'olive 1 L",na:"زيت زيتون 1 لتر",p:85,c:"ali",s:"s2",d:"Huile d'olive (exemple).",ic:"🫒"}],
+reqs:[]};
+let D;try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!D){D=JSON.parse(JSON.stringify(DEF));D.products=[];D.shops=[];}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){alert("Stockage plein : utilisez des photos plus légères.")}};
+let L="fr";try{L=localStorage.getItem("ayd_lang")||"fr"}catch(e){}
+let SELLER_SESSION=null;
+let SELLER_EMAIL="";
+let SELLER_PROFILE=null;
+let SELLER_PRODUCTS=[];
+let SELLER_ERROR="";
+let ADMIN_SESSION=null;
+let ADMIN_EMAIL="";
+let ADMIN_ORDERS=[];
+let ADMIN_PRODUCTS={};
+let ADMIN_SELLERS=[];
+let ADMIN_BRANDS=[];
+let ADMIN_PRODUCTS_ROWS=[];
+let ADMIN_TAB="orders";
+
+const T={
+fr:{home:"Accueil",cats:"Catégories",shops:"Commerçants",pricing:"Tarifs",signup:"Inscription",admin:"Admin",
+h1:"Votre boutique en ligne, sans créer de site",h2:"Présentez vos produits et recevez vos commandes directement sur WhatsApp.",
+start:"Essai gratuit 7 jours",browse:"Voir le catalogue",featured:"Produits",qty:"Quantité",price:"Prix",order:"Commander sur WhatsApp",
+shop:"Boutique",cityL:"Ville",contact:"Contact",empty:"Aucun élément pour le moment.",back:"← Retour",products:"Produits",
+pTitle:"Tarifs",pDesc:"Simple et transparent. Aucun frais caché pendant la première version.",
+free:"Essai gratuit",freeD:"7 jours pour tester toutes les fonctions.",month:"Par mois",monthD:"Boutique en ligne, catalogue et commandes WhatsApp.",
+sTitle:"Demander l'inscription de ma boutique",name:"Nom de la boutique",phone:"Numéro WhatsApp",cat:"Catégorie principale",desc:"Description",send:"Envoyer la demande",sent:"Demande enregistrée. Nous vous contacterons sur WhatsApp.",
+aTitle:"Espace administrateur",pinL:"Code d'accès",login:"Entrer",bad:"Code incorrect",logout:"Déconnexion",
+addP:"Ajouter un produit",addS:"Ajouter un commerçant",addC:"Ajouter une catégorie",pName:"Nom du produit",pNameAr:"Nom en arabe",pPrice:"Prix (DH)",photo:"Photo",add:"Ajouter",
+reqs:"Demandes d'inscription",shops2:"Commerçants",cats2:"Catégories",del:"Supprimer",confirm:"Supprimer cet élément ?",ok:"Ajouté",
+sNameL:"Nom",catFr:"Nom (FR)",catAr:"Nom (AR)",icon:"Icône (emoji)"},
+ar:{home:"الرئيسية",cats:"الأقسام",shops:"التجار",pricing:"الأسعار",signup:"التسجيل",admin:"الإدارة",
+h1:"متجرك الإلكتروني بدون إنشاء موقع",h2:"اعرض منتجاتك واستقبل طلباتك مباشرة عبر واتساب.",
+start:"تجربة مجانية لمدة 7 أيام",browse:"تصفح المنتجات",featured:"المنتجات",qty:"الكمية",price:"السعر",order:"اطلب عبر واتساب",
+shop:"المتجر",cityL:"المدينة",contact:"اتصل",empty:"لا توجد عناصر حالياً.",back:"→ رجوع",products:"المنتجات",
+pTitle:"الأسعار",pDesc:"بسيط وشفاف. بدون رسوم خفية في النسخة الأولى.",
+free:"تجربة مجانية",freeD:"7 أيام لتجربة جميع الميزات.",month:"شهرياً",monthD:"متجر إلكتروني مع الكتالوج وطلبات واتساب.",
+sTitle:"طلب تسجيل متجري",name:"اسم المتجر",phone:"رقم واتساب",cat:"القسم الرئيسي",desc:"الوصف",send:"إرسال الطلب",sent:"تم تسجيل طلبك. سنتواصل معك عبر واتساب.",
+aTitle:"لوحة الإدارة",pinL:"رمز الدخول",login:"دخول",bad:"رمز غير صحيح",logout:"خروج",
+addP:"إضافة منتج",addS:"إضافة تاجر",addC:"إضافة قسم",pName:"اسم المنتج",pNameAr:"الاسم بالعربية",pPrice:"السعر (DH)",photo:"صورة",add:"إضافة",
+reqs:"طلبات التسجيل",shops2:"التجار",cats2:"الأقسام",del:"حذف",confirm:"هل تريد الحذف؟",ok:"تمت الإضافة",
+sNameL:"الاسم",catFr:"الاسم (FR)",catAr:"الاسم (AR)",icon:"أيقونة (emoji)"}};
+const t=k=>T[L][k]||k;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nm=p=>L==="ar"&&p.na?p.na:p.n;
+const cn=c=>L==="ar"?c.ar:c.fr;
+const byId=(a,id)=>a.find(x=>x.id===id);
+const rd=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+const cardP=p=>{const s=byId(D.shops,p.s);return `<a class="card" href="#/product/${p.id}"><div class="img">${p.img?`<img src="${p.img}" alt="">`:(p.ic||"🛍️")}</div><div class="bd"><b>${esc(nm(p))}</b><div class="pr">${p.p} DH</div>${s?`<small>${esc(s.n)}</small>`:""}</div></a>`};
+const cardC=c=>`<a class="card cat" href="#/cat/${c.id}"><span>${esc(c.ic||"📦")}</span>${esc(cn(c))}</a>`;
+const waUrl=(p,q,s)=>{const num=WA;const msg=`Bonjour, je souhaite commander :\n• Produit : ${nm(p)}\n• Prix : ${p.p} DH\n• Quantité : ${q}\n• Total : ${p.p*q} DH`;return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`};
+const lst=(ty,title,f)=>`<div class="box"><h2>${title}</h2>${D[ty].length?`<table>${D[ty].map(x=>`<tr><td>${f(x)}</td><td style="text-align:end"><button class="del" onclick="del('${ty}','${x.id}')">${t("del")}</button></td></tr>`).join("")}</table>`:`<p class="mut">${t("empty")}</p>`}</div>`;
+
+const V={
+home(){return `<section class="hero"><h1>${t("h1")}</h1><p>${t("h2")}</p><a class="btn" href="#/signup">${t("start")}</a> <a class="btn g" href="#/cats" style="color:#fff;border-color:#fff8">${t("browse")}</a></section>
+<h2>${t("cats")}</h2><div class="grid">${D.cats.map(cardC).join("")}</div>
+<h2>${t("featured")}</h2><div class="grid">${D.products.slice(0,4).map(cardP).join("")||`<p class="mut">${t("empty")}</p>`}</div>`},
+cats(){return `<h1>${t("cats")}</h1><div class="grid">${D.cats.map(cardC).join("")}</div>`},
+cat(id){const c=byId(D.cats,id);if(!c)return V.home();return `<a href="#/cats" class="mut">${t("back")}</a><h1>${esc(cn(c))}</h1><div class="grid">${D.products.filter(p=>p.c===id).map(cardP).join("")||`<p class="mut">${t("empty")}</p>`}</div>`},
+shops(){return `<h1>${t("shops")}</h1><div class="box"><p>${L==="ar"?"لائحة التجار المسجلين خاصة بالإدارة. كل تاجر يدخل من فضائه الخاص.":"La liste des commerçants est réservée à l’administration. Chaque vendeur dispose de son propre espace."}</p><a class="btn b" href="#/seller">${L==="ar"?"دخول التاجر":"Espace vendeur"}</a></div>`},
+seller(){
+if(!SELLER_SESSION)return `<h1>${L==="ar"?"فضاء التاجر":"Espace vendeur"}</h1><p class="mut">${L==="ar"?"دخل بالإيميل وكلمة السر اللي عطاتهملك الإدارة بعد الموافقة على متجرك.":"Connectez-vous avec l’e-mail et le mot de passe créés après validation de votre boutique."}</p><form class="box" style="max-width:460px" onsubmit="event.preventDefault();loginSeller(this)"><label>${L==="ar"?"البريد الإلكتروني":"E-mail"}</label><input name="email" type="email" autocomplete="username" required><label>${L==="ar"?"كلمة المرور":"Mot de passe"}</label><input name="password" type="password" autocomplete="current-password" required><div class="row"><button class="btn b" type="submit">${L==="ar"?"دخول":"Se connecter"}</button></div><p id="sellerMsg" class="mut" role="status"></p></form>`;
+const profile=SELLER_PROFILE||{};
+return `<div class="row" style="justify-content:space-between;align-items:center"><div><h1>${L==="ar"?"متجري":"Ma boutique"}</h1><small>${esc(SELLER_EMAIL)}</small></div><div class="row"><button class="btn g" onclick="loadSellerData()">${L==="ar"?"تحديث":"Actualiser"}</button><button class="btn g" onclick="logoutSeller()">${L==="ar"?"خروج":"Déconnexion"}</button></div></div><div class="box"><h2>${esc(profile.store_name|| (L==="ar"?"متجري":"Ma boutique"))}</h2><p class="mut">${L==="ar"?"حالة الاشتراك":"Statut de la boutique"}: ${esc(profile.status||"—")}<br>${L==="ar"?"نهاية التجربة":"Fin de l’essai"}: ${esc(profile.trial_ends_at||"—")}</p></div><p id="sellerMsg" class="mut" role="status">${esc(SELLER_ERROR)}</p><div class="box"><h2>${L==="ar"?"إضافة منتوج جديد":"Ajouter un produit"}</h2><form onsubmit="event.preventDefault();sellerAddProduct(this)"><label>${L==="ar"?"اسم المنتوج":"Nom du produit"}</label><input name="name" required maxlength="160"><label>${L==="ar"?"الوصف":"Description"}</label><textarea name="description" rows="3"></textarea><label>${L==="ar"?"الثمن بالدرهم":"Prix (DH)"}</label><input name="price" type="number" min="0.01" step="0.01" required><label>${L==="ar"?"رابط الصورة (اختياري)":"URL de l’image (facultatif)"}</label><input name="image_url" type="url" placeholder="https://..."><div class="row"><button class="btn b" type="submit">${L==="ar"?"إضافة المنتوج":"Ajouter le produit"}</button></div></form><p class="mut">${L==="ar"?"المنتوج غادي يتربط تلقائياً بمتجرك. ما تدخلش رابط صورة إلا كان عندك رابط صالح.":"Le produit sera associé automatiquement à votre boutique."}</p></div><div class="box"><h2>${L==="ar"?"منتوجاتي":"Mes produits"} (${SELLER_PRODUCTS.length})</h2>${SELLER_PRODUCTS.map(p=>`<div class="box"><b>${esc(p.name)}</b><p>${Number(p.price||0).toFixed(2)} DH</p><small>${p.is_active?(L==="ar"?"ظاهر في المتجر":"Actif"):(L==="ar"?"مخفي":"Inactif")}</small></div>`).join("")||`<p class="mut">${L==="ar"?"ما زدت حتى منتوج لحد الآن.":"Vous n’avez pas encore ajouté de produit."}</p>`}</div>`;
+},
+shop(id){const s=byId(D.shops,id);if(!s)return V.shops();return `<a href="#/shops" class="mut">${t("back")}</a><div class="box"><h1>${esc(s.n)}</h1><p class="mut">📍 ${esc(s.city)} · ${t("contact")} : +${esc(s.phone)}</p><p>${esc(s.d||"")}</p><a class="btn wa" target="_blank" href="https://wa.me/${s.phone}">WhatsApp</a></div><h2>${t("products")}</h2><div class="grid">${D.products.filter(p=>p.s===id).map(cardP).join("")||`<p class="mut">${t("empty")}</p>`}</div>`},
+product(id){const p=byId(D.products,id);if(!p)return V.home();const s=byId(D.shops,p.s);const c=byId(D.cats,p.c);return `<a href="#/cat/${p.c||""}" class="mut">${t("back")}</a><div class="pdet" style="margin-top:14px"><div class="img">${p.img?`<img src="${p.img}" alt="">`:(p.ic||"🛍️")}</div><div><h1>${esc(nm(p))}</h1><div class="pr" style="font-size:24px">${t("price")} : ${p.p} DH</div><p>${esc(p.d)}</p><small>${esc(c?cn(c):(p.c||""))}${s?` · <a href="#/shop/${p.s}" style="color:var(--blue2)">${esc(s.n)}</a>`:""}</small><label>${t("qty")}</label><div class="qty-control"><button type="button" class="qty-btn" aria-label="Diminuer la quantité" onclick="changeQty(-1,'${p.id}')">−</button><input id="q" type="number" inputmode="numeric" min="1" max="1000" step="1" value="1" oninput="upd('${p.id}')" onblur="normalizeQty('${p.id}')"><button type="button" class="qty-btn" aria-label="Augmenter la quantité" onclick="changeQty(1,'${p.id}')">+</button></div><div class="row"><button id="ob" type="button" class="btn wa" onclick="orderNow('${p.id}')">${t("order")}</button></div><p id="orderNote" class="mut">${L==="ar"?"المجموع: ":"Total : "}${Number(p.p).toFixed(2)} DH</p></div></div>`},
+pricing(){return `<h1>${t("pTitle")}</h1><p class="mut">${t("pDesc")}</p><div class="grid pl" style="margin-top:14px">
+<div class="box plan"><h2>${t("free")}</h2><div class="p">0 DH</div><p class="mut">${t("freeD")}</p><a class="btn b" href="#/signup">${t("start")}</a></div>
+<div class="box plan"><h2>99 DH</h2><div class="p">99 DH</div><p class="mut">${t("month")} — ${t("monthD")}</p><a class="btn b" href="#/signup">${t("signup")}</a></div></div>`},
+signup(){return `<h1>${t("sTitle")}</h1><form class="box" style="max-width:560px" onsubmit="event.preventDefault();sendReq(this)"><label>${t("name")}</label><input name="n" required><label>${t("cityL")}</label><input name="c" required><label>${t("phone")}</label><input name="p" type="tel" placeholder="2126XXXXXXXX" required><label>${t("cat")}</label><select name="k">${D.cats.map(c=>`<option>${esc(cn(c))}</option>`).join("")}</select><label>${t("desc")}</label><textarea name="d" rows="3"></textarea><div class="row"><button class="btn b">${t("send")}</button></div></form>`},
+admin(){
+if(!ADMIN_SESSION)return `<h1>${t("aTitle")}</h1><p class="mut">${L==="ar"?"سجّل الدخول بحساب Supabase ديال المسؤول.":"Connectez-vous avec le compte Supabase autorisé."}</p><form class="box" style="max-width:460px" onsubmit="event.preventDefault();loginAdmin(this)"><label>${L==="ar"?"البريد الإلكتروني":"E-mail"}</label><input name="email" type="email" autocomplete="username" required><label>${L==="ar"?"كلمة المرور":"Mot de passe"}</label><input name="password" type="password" autocomplete="current-password" required><div class="row"><button class="btn b" type="submit">${L==="ar"?"دخول":"Se connecter"}</button></div><p id="adminMsg" class="mut" role="status"></p></form>`;
+const tabs=[["orders",L==="ar"?"الطلبات":"Commandes"],["products",L==="ar"?"المنتجات":"Produits"],["sellers",L==="ar"?"التجار":"Commerçants"],["brands",L==="ar"?"العلامات التجارية":"Marques"]];
+let body="";
+if(ADMIN_TAB==="orders"){
+const statusNames={new:L==="ar"?"جديد":"Nouveau",confirmed:L==="ar"?"مؤكد":"Confirmé",shipped:L==="ar"?"تم الشحن":"Expédié",completed:L==="ar"?"مكتمل":"Terminé",cancelled:L==="ar"?"ملغى":"Annulé"};
+body=`<div class="box"><h2>${L==="ar"?"الطلبات":"Commandes"} (${ADMIN_ORDERS.length})</h2><div id="adminOrders">${ADMIN_ORDERS.length?ADMIN_ORDERS.map(o=>`<div class="box" style="margin-top:10px"><div><b>${esc(o.customer_name||"—")}</b> · ${esc(o.customer_phone||"—")}</div><p>${L==="ar"?"المنتوج":"Produit"}: ${esc(ADMIN_PRODUCTS[o.product_id]||o.product_id)}<br>${L==="ar"?"الكمية":"Quantité"}: ${Number(o.quantity)||0} · ${L==="ar"?"ثمن الوحدة":"Prix unitaire"}: ${Number(o.unit_price||0).toFixed(2)} DH<br><b>${L==="ar"?"المجموع":"Total"}: ${(Number(o.quantity||0)*Number(o.unit_price||0)).toFixed(2)} DH</b><br><small>${esc(o.created_at||"")}</small></p><label>${L==="ar"?"حالة الطلب":"Statut"}</label><select onchange="updateAdminStatus(this.value,'${o.id}')">${Object.entries(statusNames).map(([v,label])=>`<option value="${v}" ${o.status===v?"selected":""}>${label}</option>`).join("")}</select></div>`).join(""):`<p class="mut">${L==="ar"?"ما كاين حتى طلب.":"Aucune commande trouvée."}</p>`}</div></div>`;
+}else if(ADMIN_TAB==="products"){
+body=`<div class="box"><h2>${L==="ar"?"إضافة منتج":"Ajouter un produit"}</h2><form onsubmit="event.preventDefault();adminAddProduct(this)"><label>${L==="ar"?"اسم المنتج":"Nom du produit"}</label><input name="name" required maxlength="160"><label>${L==="ar"?"الوصف":"Description"}</label><textarea name="description" rows="2"></textarea><label>${L==="ar"?"الثمن بالدرهم":"Prix (DH)"}</label><input name="price" type="number" min="0" step="0.01" required><label>${L==="ar"?"التاجر":"Commerçant"}</label><select name="seller_id" required>${ADMIN_SELLERS.map(s=>`<option value="${s.id}">${esc(s.store_name||"Boutique")} — ${s.id.slice(0,8)}</option>`).join("")}</select><label>${L==="ar"?"العلامة التجارية (اختياري)":"Marque (facultatif)"}</label><select name="brand_id"><option value="">—</option>${ADMIN_BRANDS.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join("")}</select><label>${L==="ar"?"رابط الصورة (اختياري)":"URL de l’image (facultatif)"}</label><input name="image_url" type="url" placeholder="https://..."><div class="row"><button class="btn b" type="submit">${L==="ar"?"إضافة المنتج":"Ajouter le produit"}</button></div></form><p class="mut">${L==="ar"?"إضافة أو تغيير المنتجات قد يتطلب سياسة RLS خاصة بالمدير في Supabase.":"L’ajout et la modification peuvent nécessiter une politique RLS administrateur dans Supabase."}</p></div><div class="box"><h2>${L==="ar"?"المنتجات الحالية":"Produits existants"} (${ADMIN_PRODUCTS_ROWS.length})</h2>${ADMIN_PRODUCTS_ROWS.map(p=>`<div class="box"><b>${esc(p.name)}</b><p class="mut">${Number(p.price||0).toFixed(2)} DH · ${p.is_active?"Actif":"Inactif"}<br><small>${esc(p.id)}</small></p><div class="row"><button class="btn g" onclick="adminToggleProduct('${p.id}',${!p.is_active})">${p.is_active?(L==="ar"?"إخفاء":"Désactiver"):(L==="ar"?"تفعيل":"Activer")}</button></div></div>`).join("")||`<p class="mut">${t("empty")}</p>`}</div>`;
+}else if(ADMIN_TAB==="sellers"){
+body=`<div class="box"><h2>${L==="ar"?"التجار":"Commerçants"} (${ADMIN_SELLERS.length})</h2>${ADMIN_SELLERS.map(s=>`<div class="box"><b>${esc(s.store_name||"—")}</b><p class="mut">WhatsApp: ${esc(s.whatsapp||"—")}<br>État: ${esc(s.status||"—")}<br>Fin d’essai: ${esc(s.trial_ends_at||"—")}<br><small>${esc(s.id)}</small></p></div>`).join("")||`<p class="mut">${t("empty")}</p>`}<p class="mut">${L==="ar"?"البيانات للعرض في نسخة الاختبار.":"Consultation dans cette version de test."}</p></div>`;
+}else{
+body=`<div class="box"><h2>${L==="ar"?"العلامات التجارية":"Marques"} (${ADMIN_BRANDS.length})</h2>${ADMIN_BRANDS.map(b=>`<div class="box"><b>${esc(b.name||"—")}</b><p class="mut">${esc(b.discription||"")}<br><small>${esc(b.id)}</small></p></div>`).join("")||`<p class="mut">${t("empty")}</p>`}<p class="mut">${L==="ar"?"البيانات للعرض في نسخة الاختبار.":"Consultation dans cette version de test."}</p></div>`;
+}
+return `<div class="row" style="justify-content:space-between;align-items:center"><div><h1>${t("aTitle")}</h1><small>${esc(ADMIN_EMAIL)}</small></div><div class="row"><button class="btn g" onclick="loadAdminData()">${L==="ar"?"تحديث":"Actualiser"}</button><button class="btn g" onclick="logoutAdmin()">${t("logout")}</button></div></div><div class="row">${tabs.map(([id,label])=>`<button class="btn ${ADMIN_TAB===id?"b":"g"}" onclick="setAdminTab('${id}')">${label}</button>`).join("")}</div><p id="adminMsg" class="mut" role="status"></p>${body}`;
+}
+};
+
+function route(){const parts=(location.hash||"#/").slice(1).split("/");const r=parts[1]||"";const id=parts[2];const fn=V[r||"home"]||V.home;document.getElementById("app").innerHTML=fn(id);navRender();window.scrollTo(0,0)}
+function navRender(){const items=[["#/",t("home")],["#/cats",t("cats")],["#/pricing",t("pricing")],["#/signup",t("signup")],["#/seller",L==="ar"?"فضاء التاجر":"Espace vendeur"],["#/admin",t("admin")]];const cur=location.hash||"#/";document.getElementById("nav").innerHTML=items.map(([h,l])=>`<a href="${h}" class="${cur===h?"on":""}">${l}</a>`).join("");document.getElementById("lg").textContent=L==="fr"?"عربي":"Français"}
+function setLang(l){L=l;try{localStorage.setItem("ayd_lang",l)}catch(e){}document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";route()}
+function upd(id){const qEl=document.getElementById("q");if(!qEl)return;const note=document.getElementById("orderNote");const p=byId(D.products,id);if(!p)return;const raw=qEl.value;if(raw===""){if(note)note.textContent=(L==="ar"?"المجموع: ":"Total : ")+"0.00 DH";return;}let q=parseInt(raw,10);if(!Number.isFinite(q)||q<1){if(note)note.textContent=(L==="ar"?"المجموع: ":"Total : ")+"0.00 DH";return;}if(q>1000){q=1000;qEl.value=q;}if(note)note.textContent=(L==="ar"?"المجموع: ":"Total : ")+(Number(p.p)*q).toFixed(2)+" DH"}
+function changeQty(delta,id){const qEl=document.getElementById("q");if(!qEl)return;let q=parseInt(qEl.value,10);if(!Number.isFinite(q))q=1;q=Math.max(1,Math.min(1000,q+delta));qEl.value=q;upd(id)}
+function normalizeQty(id){const qEl=document.getElementById("q");if(!qEl)return;let q=parseInt(qEl.value,10);if(!Number.isFinite(q)||q<1)q=1;if(q>1000)q=1000;qEl.value=q;upd(id)}
+async function orderNow(productId){
+  const p=byId(D.products,productId);if(!p)return;
+  if(!SUPABASE_PUBLISHABLE_KEY||SUPABASE_PUBLISHABLE_KEY.includes("PASTE_")){alert(L==="ar"?"مفتاح Supabase غير مضبوط.":"La clé Supabase n'est pas configurée.");return;}
+  const qEl=document.getElementById("q");let quantity=parseInt(qEl?.value||"1",10);
+  if(!Number.isInteger(quantity)||quantity<1||quantity>1000){alert(L==="ar"?"أدخل كمية بين 1 و1000.":"Saisissez une quantité entre 1 et 1000.");return;}
+  const customerName=prompt(L==="ar"?"شنو الاسم الكامل ديالك؟":"Votre nom complet ?");if(customerName===null)return;
+  if(customerName.trim().length<2){alert(L==="ar"?"دخل الاسم الكامل.":"Veuillez saisir votre nom.");return;}
+  const customerPhone=prompt(L==="ar"?"شنو رقم الهاتف ديالك؟":"Votre numéro de téléphone ?");if(customerPhone===null)return;
+  if(customerPhone.replace(/[^0-9]/g,"").length<8){alert(L==="ar"?"دخل رقم هاتف صحيح.":"Veuillez saisir un numéro de téléphone valide.");return;}
+  const btn=document.getElementById("ob");if(btn){btn.disabled=true;btn.textContent=L==="ar"?"جارٍ تسجيل الطلب…":"Enregistrement de la commande…";}
+  try{
+    const response=await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_customer_order`,{method:"POST",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({p_product_id:productId,p_customer_name:customerName.trim(),p_customer_phone:customerPhone.trim(),p_quantity:quantity})});
+    const body=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error(body?.message||body?.details||`HTTP ${response.status}`);
+    const order=body||{};const unitPrice=Number(order.unit_price??p.p);const total=Number(order.total??(unitPrice*quantity));
+    const sellerNumber=String(order.seller_whatsapp||WA).replace(/[^0-9]/g,"")||WA;
+    const message=`Bonjour, je souhaite confirmer ma commande :\n• Produit : ${order.product_name||nm(p)}\n• Prix unitaire : ${unitPrice.toFixed(2)} DH\n• Quantité : ${quantity}\n• Total : ${total.toFixed(2)} DH\n• Nom : ${customerName.trim()}\n• Téléphone : ${customerPhone.trim()}\n• Référence : ${order.order_id||""}`;
+    const waUrl=`https://wa.me/${sellerNumber}?text=${encodeURIComponent(message)}`;
+    // Keep the shop page open and show a real user-clickable WhatsApp link.
+    const note=document.getElementById("orderNote");
+    if(note){
+      note.textContent=L==="ar"?"تسجّل الطلب بنجاح. ضغط على الزر لتكمل فواتساب:":"Commande enregistrée. Appuyez sur le bouton pour continuer sur WhatsApp :";
+      const link=document.createElement("a");
+      link.href=waUrl;link.target="_blank";link.rel="noopener noreferrer";
+      link.className="btn wa";link.style.display="inline-block";link.style.marginTop="10px";
+      link.textContent=L==="ar"?"فتح واتساب وإرسال الطلب":"Ouvrir WhatsApp et envoyer la commande";
+      note.appendChild(document.createElement("br"));note.appendChild(link);
+    }
+    alert(L==="ar"?"تسجّل الطلب بنجاح. غادي تلقى زر فتح واتساب تحت المجموع؛ ضغط عليه باش تكمل.":"Commande enregistrée. Le bouton WhatsApp apparaît sous le total ; appuyez dessus pour continuer.");
+  }catch(err){console.error("Order submission failed:",err);alert((L==="ar"?"ما قدرناش نسجلو الطلب. ":"Impossible d'enregistrer la commande. ")+err.message);}
+  finally{if(btn){btn.disabled=false;btn.textContent=t("order");}}
+}
+function sendReq(f){D.reqs.push({id:"r"+Date.now(),n:f.n.value,c:f.c.value,p:f.p.value,k:f.k.value,d:f.d.value});save();window.open(`https://wa.me/${WA}?text=${encodeURIComponent("Nouvelle demande : "+f.n.value+" – "+f.c.value+" – "+f.p.value)}`,"_blank");f.reset();alert(t("sent"))}
+
+async function sellerFetch(path,options={}){
+ if(!SELLER_SESSION)throw new Error("Session vendeur absente.");
+ const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...options,headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SELLER_SESSION.access_token}`,"Content-Type":"application/json",Prefer:"return=representation",...(options.headers||{})}});
+ const data=await res.json().catch(()=>null);if(!res.ok)throw new Error(data?.message||data?.details||data?.hint||`HTTP ${res.status}`);return data;
+}
+async function loginSeller(f){
+ const msg=document.getElementById("sellerMsg");if(msg)msg.textContent=L==="ar"?"جارٍ التحقق من الحساب…":"Vérification du compte…";
+ const button=f.querySelector('button[type="submit"]');if(button)button.disabled=true;
+ try{
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:"POST",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:f.email.value.trim(),password:f.password.value})});
+  const data=await res.json().catch(()=>({}));if(!res.ok||!data.access_token)throw new Error(data.msg||data.message||data.error_description||"Connexion impossible");
+  SELLER_SESSION=data;SELLER_EMAIL=data.user?.email||f.email.value.trim();
+  const rows=await sellerFetch(`sellers?select=id,store_name,whatsapp,status,trial_ends_at,created_at&id=eq.${encodeURIComponent(data.user.id)}&limit=1`);
+  if(!Array.isArray(rows)||!rows.length){SELLER_SESSION=null;SELLER_EMAIL="";throw new Error(L==="ar"?"هاد الحساب ما مربوطش بمتجر. تواصل مع الإدارة.":"Aucune boutique n’est associée à ce compte. Contactez l’administration.");}
+  SELLER_PROFILE=rows[0];await loadSellerData();
+ }catch(err){if(msg)msg.textContent=(L==="ar"?"تعذر الدخول: ":"Connexion refusée : ")+err.message;else alert(err.message);}
+ finally{if(button)button.disabled=false;}
+}
+async function loadSellerData(){
+ if(!SELLER_SESSION)return;const msg=document.getElementById("sellerMsg");if(msg)msg.textContent=L==="ar"?"جارٍ تحميل المتجر والمنتوجات…":"Chargement de la boutique et des produits…";
+ try{
+  const [profiles,products]=await Promise.all([
+   sellerFetch(`sellers?select=id,store_name,whatsapp,status,trial_ends_at,created_at&id=eq.${encodeURIComponent(SELLER_SESSION.user.id)}&limit=1`),
+   sellerFetch(`products?select=id,seller_id,name,description,price,image_url,is_active,created_at&seller_id=eq.${encodeURIComponent(SELLER_SESSION.user.id)}&order=created_at.desc&limit=200`)
+  ]);
+  if(!profiles.length)throw new Error("Profil vendeur introuvable.");SELLER_PROFILE=profiles[0];SELLER_PRODUCTS=Array.isArray(products)?products:[];SELLER_ERROR="";route();
+ }catch(err){SELLER_ERROR=err.message;if(msg)msg.textContent=(L==="ar"?"تعذر تحميل البيانات: ":"Chargement impossible : ")+err.message;else route();}
+}
+async function sellerAddProduct(f){
+ try{
+  if(!SELLER_SESSION||!SELLER_PROFILE)throw new Error("Connectez-vous à votre boutique.");
+  const price=Number(f.price.value);if(!Number.isFinite(price)||price<=0)throw new Error(L==="ar"?"دخل ثمن صحيح أكبر من صفر.":"Saisissez un prix supérieur à zéro.");
+  const data={seller_id:SELLER_SESSION.user.id,name:f.name.value.trim(),description:f.description.value.trim()||null,price,image_url:f.image_url.value.trim()||null,is_active:true};
+  await sellerFetch("products",{method:"POST",body:JSON.stringify(data)});f.reset();SELLER_ERROR=L==="ar"?"تزاد المنتوج بنجاح.":"Produit ajouté avec succès.";await loadSellerData();
+ }catch(err){alert((L==="ar"?"تعذر إضافة المنتوج: ":"Ajout impossible : ")+err.message);}
+}
+function logoutSeller(){SELLER_SESSION=null;SELLER_EMAIL="";SELLER_PROFILE=null;SELLER_PRODUCTS=[];SELLER_ERROR="";location.hash="#/seller";route();}
+
+async function loginAdmin(f){
+  const msg=document.getElementById("adminMsg");if(msg)msg.textContent=L==="ar"?"جارٍ التحقق…":"Vérification…";
+  const button=f.querySelector('button[type="submit"]');if(button)button.disabled=true;
+  try{
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:"POST",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:f.email.value.trim(),password:f.password.value})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||!data.access_token)throw new Error(data.msg||data.message||data.error_description||"Connexion impossible");
+    ADMIN_SESSION=data;ADMIN_EMAIL=data.user?.email||f.email.value.trim();
+    const check=await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`,{method:"POST",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${ADMIN_SESSION.access_token}`,"Content-Type":"application/json"},body:"{}"});
+    if(!check.ok)throw new Error("Impossible de vérifier les droits administrateur.");
+    const isAdmin=await check.json();if(isAdmin!==true){ADMIN_SESSION=null;throw new Error(L==="ar"?"هاد الحساب ما عندوش صلاحية المسؤول.":"Ce compte n'est pas autorisé comme administrateur.");}
+    await loadAdminData();route();
+  }catch(err){if(msg)msg.textContent=(L==="ar"?"تعذر الدخول: ":"Connexion refusée : ")+err.message;else alert(err.message);}
+  finally{if(button)button.disabled=false;}
+}
+function logoutAdmin(){ADMIN_SESSION=null;ADMIN_EMAIL="";ADMIN_ORDERS=[];ADMIN_PRODUCTS={};ADMIN_PRODUCTS_ROWS=[];ADMIN_SELLERS=[];ADMIN_BRANDS=[];ADMIN_TAB="orders";route()}
+function setAdminTab(tab){ADMIN_TAB=tab;route()}
+async function adminFetch(path,options={}){
+ if(!ADMIN_SESSION)throw new Error("Session administrateur absente.");
+ const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...options,headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${ADMIN_SESSION.access_token}`,"Content-Type":"application/json",Prefer:"return=representation",...(options.headers||{})}});
+ const data=await res.json().catch(()=>null);if(!res.ok)throw new Error(data?.message||data?.details||data?.hint||`HTTP ${res.status}`);return data;
+}
+async function loadAdminData(){
+ if(!ADMIN_SESSION)return;const msg=document.getElementById("adminMsg");if(msg)msg.textContent=L==="ar"?"جارٍ تحميل البيانات…":"Chargement des données…";
+ const errors=[];
+ const tasks=[
+  ["orders",()=>adminFetch("orders?select=id,customer_name,customer_phone,product_id,quantity,unit_price,status,created_at&order=created_at.desc&limit=100")],
+  ["products",()=>adminFetch("products?select=id,seller_id,brand_id,name,description,price,image_url,is_active,created_at&order=created_at.desc&limit=200")],
+  ["sellers",()=>adminFetch("sellers?select=id,store_name,whatsapp,status,trial_ends_at,created_at&order=created_at.desc&limit=200")],
+  ["brands",()=>adminFetch("brands?select=id,seller_id,name,discription,created_at&order=created_at.desc&limit=200")]
+ ];
+ const results=await Promise.all(tasks.map(async ([key,fn])=>{try{return [key,await fn(),null]}catch(e){return [key,null,e]}}));
+ for(const [key,data,err] of results){if(err){errors.push(`${key}: ${err.message}`);continue;}if(key==="orders")ADMIN_ORDERS=Array.isArray(data)?data:[];if(key==="products"){ADMIN_PRODUCTS_ROWS=Array.isArray(data)?data:[];ADMIN_PRODUCTS=Object.fromEntries(ADMIN_PRODUCTS_ROWS.map(p=>[p.id,p.name]));}if(key==="sellers")ADMIN_SELLERS=Array.isArray(data)?data:[];if(key==="brands")ADMIN_BRANDS=Array.isArray(data)?data:[];}
+ route();if(errors.length){const m=document.getElementById("adminMsg");if(m)m.textContent=(L==="ar"?"بعض الجداول ما تحمّلاتش، غالباً بسبب صلاحيات RLS: ":"Certaines tables n’ont pas pu être chargées (politiques RLS possibles) : ")+errors.join(" | ");}
+}
+async function adminAddProduct(f){
+ try{if(!ADMIN_SELLERS.length)throw new Error(L==="ar"?"ما كاين حتى تاجر محمّل. تحقق من صلاحيات قراءة جدول sellers.":"Aucun commerçant chargé. Vérifiez les droits de lecture sur sellers.");
+ const data={seller_id:f.seller_id.value,name:f.name.value.trim(),description:f.description.value.trim()||null,price:Number(f.price.value),image_url:f.image_url.value.trim()||null,is_active:true,brand_id:f.brand_id.value||null};
+ await adminFetch("products",{method:"POST",body:JSON.stringify(data)});alert(L==="ar"?"تزاد المنتج.":"Produit ajouté.");await loadAdminData();
+ }catch(err){alert((L==="ar"?"فشل إضافة المنتج: ":"Ajout impossible : ")+err.message);}
+}
+async function adminToggleProduct(id,active){try{await adminFetch(`products?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify({is_active:active})});await loadAdminData();}catch(err){alert((L==="ar"?"تعذر تغيير حالة المنتج: ":"Modification impossible : ")+err.message);}}
+
+async function loadAdminOrders(){
+  if(!ADMIN_SESSION)return;
+  const msg=document.getElementById("adminMsg");if(msg)msg.textContent=L==="ar"?"جارٍ تحميل الطلبات…":"Chargement des commandes…";
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/orders?select=id,customer_name,customer_phone,product_id,quantity,unit_price,status,created_at&order=created_at.desc&limit=100`,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${ADMIN_SESSION.access_token}`}});
+    const data=await res.json().catch(()=>[]);if(!res.ok)throw new Error(data.message||`HTTP ${res.status}`);
+    ADMIN_ORDERS=Array.isArray(data)?data:[];
+    const pres=await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,name&is_active=eq.true`,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`}});
+    if(pres.ok){const products=await pres.json();ADMIN_PRODUCTS=Object.fromEntries(products.map(p=>[p.id,p.name]));}
+    route();
+  }catch(err){if(msg)msg.textContent=(L==="ar"?"تعذر تحميل الطلبات: ":"Erreur de chargement : ")+err.message;else alert(err.message);}
+}
+async function updateAdminStatus(status,orderId){
+  if(!ADMIN_SESSION)return;
+  const msg=document.getElementById("adminMsg");if(msg)msg.textContent=L==="ar"?"جارٍ تحديث الحالة…":"Mise à jour du statut…";
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/admin_update_order_status`,{method:"POST",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${ADMIN_SESSION.access_token}`,"Content-Type":"application/json"},body:JSON.stringify({p_order_id:orderId,p_status:status})});
+    const body=await res.json().catch(()=>null);if(!res.ok)throw new Error(body?.message||body?.details||`HTTP ${res.status}`);if(body!==true)throw new Error("Commande introuvable ou mise à jour non effectuée.");
+    const order=ADMIN_ORDERS.find(o=>o.id===orderId);if(order)order.status=status;
+    route();
+  }catch(err){alert((L==="ar"?"فشل تحديث الحالة: ":"Échec de mise à jour : ")+err.message);await loadAdminOrders();}
+}
+function del(ty,id){if(confirm(t("confirm"))){D[ty]=D[ty].filter(x=>x.id!==id);save();route()}}
+async function addP(f){const fl=f.ph.files[0];const img=fl?await rd(fl):"";D.products.push({id:"p"+Date.now(),n:f.n.value,na:f.na.value,p:+f.p.value,c:f.c.value,s:f.s.value,d:f.d.value,img,ic:"🛍️"});save();alert(t("ok"));route()}
+function addS(f){D.shops.push({id:"s"+Date.now(),n:f.n.value,city:f.c.value,phone:f.p.value.replace(/\D/g,""),d:f.d.value});save();alert(t("ok"));route()}
+function addC(f){D.cats.push({id:"c"+Date.now(),fr:f.fr.value,ar:f.ar.value||f.fr.value,ic:f.ic.value||"📦"});save();alert(t("ok"));route()}
+
+document.documentElement.lang=L;document.documentElement.dir=L==="ar"?"rtl":"ltr";
+window.addEventListener("hashchange",route);
+route();
+
+// Charge les produits actifs depuis Supabase. Les commandes sont enregistrées via RPC puis ouvertes sur WhatsApp.
+async function loadSupabaseProducts(){
+  if(!SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY.includes("PASTE_")){
+    console.warn("Ajoutez la clé Publishable Supabase dans SUPABASE_PUBLISHABLE_KEY."); return;
+  }
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,seller_id,name,description,price,image_url,is_active,created_at&is_active=eq.true&order=created_at.desc`,{
+      headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`}
+    });
+    if(!res.ok) throw new Error(`Supabase HTTP ${res.status}: ${await res.text()}`);
+    const rows=await res.json();
+    const catId=()=>"aut"; // La table products actuelle ne contient pas de colonne category.
+    D.products=rows.map(p=>({id:p.id,seller_id:p.seller_id,n:p.name,na:p.name,p:Number(p.price),c:catId(),s:"",d:p.description||"",img:p.image_url||"",ic:"🛍️"}));
+    D.shops=[];
+    route();
+    console.info(`Supabase: ${rows.length} produit(s) actif(s) chargé(s).`);
+  }catch(err){console.error("Échec du chargement des produits Supabase:",err);}
+}
+loadSupabaseProducts();
+</script>
+</body>
+</html>
