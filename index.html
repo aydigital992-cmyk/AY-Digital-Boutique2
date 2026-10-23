@@ -249,7 +249,7 @@ async function sellerAddProduct(f){
  try{
   if(!SELLER_SESSION||!SELLER_PROFILE)throw new Error("Connectez-vous à votre boutique.");
   const price=Number(f.price.value);if(!Number.isFinite(price)||price<=0)throw new Error(L==="ar"?"دخل ثمن صحيح أكبر من صفر.":"Saisissez un prix supérieur à zéro.");
-  const data={seller_id:SELLER_SESSION.user.id,name:f.name.value.trim(),description:f.description.value.trim()||null,price,image_url:f.image_url.value.trim()||null,category:f.category.value,is_active:true};
+  const data={seller_id:SELLER_SESSION.user.id,name:f.name.value.trim(),description:f.description.value.trim()||null,category:f.category.value,price,image_url:f.image_url.value.trim()||null,is_active:true};
   await sellerFetch("products",{method:"POST",body:JSON.stringify(data)});f.reset();SELLER_ERROR=L==="ar"?"تزاد المنتوج بنجاح.":"Produit ajouté avec succès.";await loadSellerData();
  }catch(err){alert((L==="ar"?"تعذر إضافة المنتوج: ":"Ajout impossible : ")+err.message);}
 }
