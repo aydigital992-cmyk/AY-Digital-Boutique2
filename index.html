@@ -289,7 +289,7 @@ async function loadAdminData(){
  const errors=[];
  const tasks=[
   ["orders",()=>adminFetch("orders?select=id,customer_name,customer_phone,product_id,quantity,unit_price,status,created_at&order=created_at.desc&limit=100")],
-  ["products",()=>adminFetch("products?select=id,seller_id,brand_id,name,description,price,image_url,is_active,created_at&order=created_at.desc&limit=200")],
+  ["products",()=>adminFetch("products?select=id,seller_id,brand_id,name,description,category,price,image_url,is_active,created_at&order=created_at.desc&limit=200")],
   ["sellers",()=>adminFetch("sellers?select=id,store_name,whatsapp,status,trial_ends_at,created_at&order=created_at.desc&limit=200")],
   ["brands",()=>adminFetch("brands?select=id,seller_id,name,discription,created_at&order=created_at.desc&limit=200")]
  ];
