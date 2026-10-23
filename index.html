@@ -150,8 +150,7 @@ if(!SELLER_SESSION)return `<h1>${L==="ar"?"فضاء التاجر":"Espace vendeu
 const profile=SELLER_PROFILE||{};
 return `<div class="row" style="justify-content:space-between;align-items:center"><div><h1>${L==="ar"?"متجري":"Ma boutique"}</h1><small>${esc(SELLER_EMAIL)}</small></div><div class="row"><button class="btn g" onclick="loadSellerData()">${L==="ar"?"تحديث":"Actualiser"}</button><button class="btn g" onclick="logoutSeller()">${L==="ar"?"خروج":"Déconnexion"}</button></div></div><div class="box"><h2>${esc(profile.store_name|| (L==="ar"?"متجري":"Ma boutique"))}</h2><p class="mut">${L==="ar"?"حالة الاشتراك":"Statut de la boutique"}: ${esc(profile.status||"—")}<br>${L==="ar"?"نهاية التجربة":"Fin de l’essai"}: ${esc(profile.trial_ends_at||"—")}</p></div><p id="sellerMsg" class="mut" role="status">${esc(SELLER_ERROR)}</p><div class="box"><h2>${L==="ar"?"إضافة منتوج جديد":"Ajouter un produit"}</h2><form onsubmit="event.preventDefault();sellerAddProduct(this)"><label>${L==="ar"?"اسم المنتوج":"Nom du produit"}</label><input name="name" required maxlength="160"><label>${L==="ar"?"الفئة":"Catégorie"}</label>
 <select name="category" required>
-  <option value="supp">مكملات غذائية</option>
-</select><label>${L==="ar"?"الوصف":"Description"}</label><textarea name="description" rows="3"></textarea><label>${L==="ar"?"الثمن بالدرهم":"Prix (DH)"}</label><input name="price" type="number" min="0.01" step="0.01" required><label>${L==="ar"?"الفئة":"Catégorie"}</label>
+<label>${L==="ar"?"الوصف":"Description"}</label><textarea name="description" rows="3"></textarea><label>${L==="ar"?"الثمن بالدرهم":"Prix (DH)"}</label><input name="price" type="number" min="0.01" step="0.01" required><label>${L==="ar"?"الفئة":"Catégorie"}</label>
 <select name="category" required>
 <option value="vet">${L==="ar"?"ملابس":"Vêtements"}</option>
 <option value="acc">${L==="ar"?"إكسسوارات":"Accessoires"}</option>
