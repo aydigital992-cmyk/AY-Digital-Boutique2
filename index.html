@@ -247,7 +247,7 @@ async function loadSellerData(){
  try{
   const [profiles,products]=await Promise.all([
    sellerFetch(`sellers?select=id,store_name,whatsapp,status,trial_ends_at,created_at&id=eq.${encodeURIComponent(SELLER_SESSION.user.id)}&limit=1`),
-   sellerFetch(`products?select=id,seller_id,name,description,price,image_url,is_active,created_at&seller_id=eq.${encodeURIComponent(SELLER_SESSION.user.id)}&order=created_at.desc&limit=200`)
+   sellerFetch(`products?select=id,seller_id,name,description,category,price,image_url,is_active,created_at&seller_id=eq.${encodeURIComponent(SELLER_SESSION.user.id)}&order=created_at.desc&limit=200`)
   ]);
   if(!profiles.length)throw new Error("Profil vendeur introuvable.");SELLER_PROFILE=profiles[0];SELLER_PRODUCTS=Array.isArray(products)?products:[];SELLER_ERROR="";route();
  }catch(err){SELLER_ERROR=err.message;if(msg)msg.textContent=(L==="ar"?"تعذر تحميل البيانات: ":"Chargement impossible : ")+err.message;else route();}
