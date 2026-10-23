@@ -347,8 +347,8 @@ async function loadSupabaseProducts(){
     });
     if(!res.ok) throw new Error(`Supabase HTTP ${res.status}: ${await res.text()}`);
     const rows=await res.json();
-    const catId=()=>"aut"; // La table products actuelle ne contient pas de colonne category.
-    D.products=rows.map(p=>({id:p.id,seller_id:p.seller_id,n:p.name,na:p.name,p:Number(p.price),c:catId(),s:"",d:p.description||"",img:p.image_url||"",ic:"🛍️"}));
+    const catId=(p)=>p.category||"aut";
+    D.products=rows.map(p=>({id:p.id,seller_id:p.seller_id,n:p.name,na:p.name,p:Number(p.price),c:catId(p),s:"",d:p.description||"",img:p.image_url||"",ic:"🛍️"}));
     D.shops=[];
     route();
     console.info(`Supabase: ${rows.length} produit(s) actif(s) chargé(s).`);
